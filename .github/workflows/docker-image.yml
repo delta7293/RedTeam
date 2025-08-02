@@ -1,0 +1,32 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image (with fixed tag)
+        run: |
+          docker build \
+            -f RedTeam/redteam_core/miner/commits/ab_sniffer_v2/Dockerfile \
+            -t sean7291130/redteam:ab-sniffer-v2-v1.0 \
+            RedTeam/redteam_core/miner/commits/ab_sniffer_v2
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push sean7291130/redteam:ab-sniffer-v2-v1.0
